@@ -1,6 +1,6 @@
 from rest_framework.views import exception_handler
 
-from povertool.response import AESJsonResponse
+from povertool.responses import AESJsonResponse
 
 
 def custom_exception_handler(exc, context):
@@ -12,6 +12,6 @@ def custom_exception_handler(exc, context):
     if response is not None:
         status_code = response.status_code
         if status_code == 404:
-            return AESJsonResponse(code=404, msg='未找到')
+            return AESJsonResponse(code=404, msg="未找到")
 
     return response

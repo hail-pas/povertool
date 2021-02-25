@@ -12,32 +12,30 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import logging
 import os
 import sys
-
-import sentry_sdk
 from datetime import timedelta
-from dotenv import load_dotenv, find_dotenv
-
 from pathlib import Path
 
+import sentry_sdk
 from celery.schedules import crontab
+from dotenv import find_dotenv, load_dotenv
 from sentry_sdk.integrations.django import DjangoIntegration
 
 load_dotenv(find_dotenv(), override=True)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_LOG_DIR = os.path.join(BASE_DIR, 'logs')
+BASE_LOG_DIR = os.path.join(BASE_DIR, "logs")
 
-SERVER_URL = os.getenv('SERVER_URL')
+SERVER_URL = os.getenv("SERVER_URL")
 PROJ_NAME = os.getenv("PROJ_NAME")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'r^os@$221g2&0&q-=n0_ihwc$z_u^+@c$t)e+k-#_-&w-gni#a'
+SECRET_KEY = "r^os@$221g2&0&q-=n0_ihwc$z_u^+@c$t)e+k-#_-&w-gni#a"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') == 'True'
+DEBUG = os.getenv("DEBUG") == "True"
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 配置sentry错误监控
@@ -49,73 +47,72 @@ DEBUG = os.getenv('DEBUG') == 'True'
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 跨域配置
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # DRF
-    'corsheaders',
-    'rest_framework',
-    'api.apps.ApiConfig',
+    "corsheaders",
+    "rest_framework",
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     # 跨域中间件
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     # 'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'povertool.middleware.RequestMiddleware',
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "povertool.middleware.RequestMiddleware",
 ]
 
-ROOT_URLCONF = 'povertool.urls'
+ROOT_URLCONF = "povertool.urls"
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        # 'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-    ),
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     # 'rest_framework.permissions.IsAuthenticated',
+    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    # ),
     # 'DEFAULT_AUTHENTICATION_CLASSES': (
     #     'rest_framework.authentication.BasicAuthentication',
     # ),
     # 指定支持coreapi的Schema
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
-    'EXCEPTION_HANDLER': 'api.exceptions.custom_exception_handler'
-
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    "EXCEPTION_HANDLER": "api.exceptions.custom_exception_handler",
+    "PAGE_SIZE": 10,
 }
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR, 'templates']
-        ,
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR, "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'povertool.wsgi.application'
-ASGI_APPLICATION = 'fabulous.asgi.application'
+WSGI_APPLICATION = "povertool.wsgi.application"
+ASGI_APPLICATION = "fabulous.asgi.application"
 
 
 # Database
@@ -123,10 +120,7 @@ ASGI_APPLICATION = 'fabulous.asgi.application'
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3",}
     # MySQL
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
@@ -187,27 +181,19 @@ DATABASES = {
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'zh-hans'
+LANGUAGE_CODE = "zh-hans"
 
-TIME_ZONE = 'Asia/Shanghai'
+TIME_ZONE = "Asia/Shanghai"
 
 USE_I18N = True
 
@@ -219,15 +205,16 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'collect_static')
-STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "collect_static")
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 RESPONSE_ENCRYPT_KEY = "wGMVi7PWpGe8UiqaYcEgXTgFm+q10awDL7jL9394PPE="
+JWT_ENCRYPT_KEY = "wGMVi7PWpGe8UiqaYc124235m+q10awDL7jL9394PPE="
 # Celery
 CELERY_ENABLE_UTC = False
 CELERY_TIMEZONE = TIME_ZONE
@@ -236,21 +223,18 @@ CELERYD_MAX_TASKS_PER_CHILD = 200
 CELERYD_CONCURRENCY = 1
 # CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = f"redis://{os.getenv('BROKER_HOST')}:6379/4"
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = "json"
 CELERY_BROKER_URL = f"redis://{os.getenv('BROKER_HOST')}:6379/3"  # 'redis://127.0.0.1:6379/3'
 
 CELERY_ROUTES = {
-    '定时任务': {  # task name
-        'queue': 'timing_work'  # queue
-    },
-
+    "定时任务": {"queue": "timing_work"},  # task name  # queue
 }
-CELERY_DEFAULT_QUEUE = 'celery_work'  # 默认对列
+CELERY_DEFAULT_QUEUE = "celery_work"  # 默认对列
 # if not DEBUG:
 CELERYBEAT_SCHEDULE = {
-    '定时任务': {
-        'task': '定时任务',
-        'schedule': timedelta(seconds=5)  # crontab(minute='*/2')  # timedelta(seconds=5)
+    "定时任务": {
+        "task": "定时任务",
+        "schedule": timedelta(seconds=5),  # crontab(minute='*/2')  # timedelta(seconds=5)
     },
 }
 
@@ -263,8 +247,10 @@ else:
     LOGGER.setLevel(logging.INFO)
 sh = logging.StreamHandler(sys.stdout)
 sh.setLevel(logging.DEBUG)
-sh.setFormatter(logging.Formatter(
-    fmt="%(asctime)s - %(name)s:%(lineno)d - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-))
+sh.setFormatter(
+    logging.Formatter(
+        fmt="%(asctime)s - %(name)s:%(lineno)d - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+)
 LOGGER.addHandler(sh)
