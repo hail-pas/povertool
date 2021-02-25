@@ -1,0 +1,52 @@
+version: '3'
+services:
+  povertool:
+    build: .
+    image: povertool
+    ports:
+      - '8000:8000'
+    depends_on:
+      - redis
+    links:
+      - redis
+    environment:
+      - BROKER_HOST=redis
+    volumes:
+      # 本地时间同步
+      - /etc/localtime:/etc/localtime
+#      - /usr/share/nginx/povertool/logs/:/usr/share/nginx/povertool/logs/
+#      - /usr/share/nginx/fabulous/collect_static/:/usr/share/nginx/fabulous/collect_static/
+#    command: uvicorn povertool.asgi:application --port 8000 --host 0.0.0.0
+    command: gunicorn -c gunicorn-conf.py povertool.wsgi:application
+  redis:
+    hostname: redis
+    image: redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - ./redis/data:/data
+      - /etc/localtime:/etc/localtime
+  celery-worker-default:
+    depends_on:
+      - redis
+      - povertool
+    image: povertool
+    volumes:
+      - /etc/localtime:/etc/localtime
+    links:
+      - redis
+    environment:
+      - BROKER_HOST=redis
+    command: celery -A povertool.celery worker --hostname=celery-1 -l info -P gevent -Q celery_work
+  celery-worker-timing:
+    depends_on:
+      - redis
+      - povertool
+    image: povertool
+    volumes:
+      - /etc/localtime:/etc/localtime
+    links:
+      - redis
+    environment:
+      - BROKER_HOST=redis
+    command: celery -A povertool.celery worker --hostname=celery-1 -l info -P gevent -Q timing_work
