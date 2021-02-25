@@ -26,6 +26,7 @@ pyDes = "2.0.1"
 pyjwt = "2.0.1"
 # aioredis = "1.3.1"
 redis = "*"
+aioredis = "*"
 sentry-sdk = "0.17.0"
 
 [tool.poetry.dev-dependencies]
