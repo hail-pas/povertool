@@ -77,6 +77,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "povertool.middleware.RequestMiddleware",
+    "povertool.middleware.JwtAuthMiddleware",
 ]
 
 ROOT_URLCONF = "povertool.urls"

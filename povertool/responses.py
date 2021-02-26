@@ -18,6 +18,7 @@ class JSONResponse(JsonResponse):
         self,
         code=200,
         data=None,
+        count=None,
         msg=None,
         encoder=DjangoJSONEncoder,
         safe=False,
@@ -31,6 +32,8 @@ class JSONResponse(JsonResponse):
             ret["data"] = data
         else:
             ret["msg"] = msg
+        if count:
+            ret["count"] = count
         super(JSONResponse, self).__init__(
             ret, encoder=encoder, safe=safe, json_dumps_params=json_dumps_params, **kwargs
         )
@@ -41,7 +44,7 @@ class AESJsonResponse(HttpResponse):
     加密响应
     """
 
-    def __init__(self, code=200, data=None, msg=None, *args, **kwargs):
+    def __init__(self, code=200, data=None, count=None, msg=None, *args, **kwargs):
         ret = {
             "code": code,
         }
@@ -49,6 +52,8 @@ class AESJsonResponse(HttpResponse):
             ret["data"] = data
         else:
             ret["msg"] = msg
+        if count:
+            ret["count"] = count
         content = json.dumps(ret, cls=DjangoJSONEncoder, ensure_ascii=False,)
         if not settings.DEBUG:
             content = AESUtil(settings.RESPONSE_ENCRYPT_KEY).encrypt_data(content)

@@ -57,7 +57,7 @@ class UserInfoView(APIView):
     # authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (permissions.IsAdminUser,)
     # @method_decorator()  传入装饰器，装饰器不能直接装饰视图函数
-    jwt_exempt_methods = ["GET"]
+    jwt_exempt_methods = ["PUT"]
     sign_exempt_methods = ["GET", "put"]
 
     def get(self, request):
@@ -67,7 +67,7 @@ class UserInfoView(APIView):
         pg = PageNumberSizePagination()
         qs = pg.paginate_queryset(qs, request)
         data = serializers.UserInfoSerializer(qs, many=True).data
-        return AESJsonResponse(data=data)
+        return AESJsonResponse(data=data, count=pg.page.paginator.count)
 
     def put(self, request):
         user = request.user  # type:models.User

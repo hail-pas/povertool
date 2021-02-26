@@ -9,7 +9,7 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class UserInfoAdmin(admin.ModelAdmin):
-    fields = ["__all__"]
+    fields = ["user", "name", "birthday", "sex", "address", "nation"]
 
 
 admin.site.register(User, UserAdmin)

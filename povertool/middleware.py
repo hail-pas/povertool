@@ -114,4 +114,5 @@ class JwtAuthMiddleware:
             request.user.is_authenticated = True
             # 任务人数
         except jwt.PyJWTError as e:
+            print(e)
             return AESJsonResponse(code=401, msg="登录已过期")

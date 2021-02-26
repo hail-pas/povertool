@@ -15,3 +15,4 @@ RUN poetry install
 
 # 复制源文件
 COPY . /usr/share/nginx/povertool
+RUN mkdir ./static

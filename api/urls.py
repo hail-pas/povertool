@@ -21,6 +21,6 @@ from api import views
 urlpatterns = [
     path("register", views.register, name="register"),
     path("login", views.login, name="login"),
-    # path("user/info", views.UserInfoView.as_view(), name="user_info"),
+    path("user/info", views.UserInfoView.as_view(), name="user_info"),
     path("check/<int:user_id>", views.check_user, name="check_user"),
 ]
