@@ -43,7 +43,7 @@ class ToolsTest(APITestCase):
 
     def test_register(self):
         url = self.get_url("register")
-        data = {"phone": "18000000000", "password": "2021LearnForever", "nickname": "phoenix"}
+        data = {"phone": "18000000003", "password": "2021LearnForever", "nickname": "phoenix"}
 
         response = requests.post(url, headers=self.headers, data=data)
         data = response.json()

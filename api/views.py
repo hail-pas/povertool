@@ -22,8 +22,6 @@ def register(request):
     data = request.POST.dict()
     phone = request.POST.get("phone")
     password = request.POST.get("password")
-    if models.User.objects.filter(phone=phone).exists():
-        return AESJsonResponse(code=429, msg="手机号已被注册")
     us = serializers.UserSerializer(
         data=data,
         context=dict(password=Password.get_password_hash(password), ip=get_client_ip(request),),
@@ -31,7 +29,7 @@ def register(request):
     if us.is_valid():
         user = us.save()
         return AESJsonResponse()
-    return AESJsonResponse(status=433, msg=us.errors)
+    return AESJsonResponse(code=433, msg=us.errors)
 
 
 @sign_exempt
