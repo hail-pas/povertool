@@ -1,4 +1,4 @@
-checkfiles = povertool api/
+checkfiles = povertool apps/
 black_opts = -l 100 -t py38
 py_warn = PYTHONDEVMODE=1
 

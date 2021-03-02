@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+import datetime
 import logging
 import os
 import sys
@@ -24,6 +25,8 @@ load_dotenv(find_dotenv(), override=True)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_LOG_DIR = os.path.join(BASE_DIR, "logs")
+sys.path.insert(0, str(BASE_DIR))
+sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
 
 SERVER_URL = os.getenv("SERVER_URL")
 PROJ_NAME = os.getenv("PROJ_NAME")
@@ -63,7 +66,10 @@ INSTALLED_APPS = [
     # DRF
     "corsheaders",
     "rest_framework",
-    "api.apps.ApiConfig",
+    "captcha",
+    "users.apps.UsersConfig",
+    "tools.apps.ToolsConfig",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
@@ -76,25 +82,34 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "povertool.middleware.RequestMiddleware",
-    "povertool.middleware.JwtAuthMiddleware",
 ]
 
 ROOT_URLCONF = "povertool.urls"
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': (
-    #     # 'rest_framework.permissions.IsAuthenticated',
-    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    #     'rest_framework.permissions.IsAuthenticated',
+    #     # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     # ),
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework.authentication.BasicAuthentication',
-    # ),
-    # 指定支持coreapi的Schema
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+    ),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
-    "EXCEPTION_HANDLER": "api.exceptions.custom_exception_handler",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
 }
+"""
+REST-Framework-JWT
+"""
+JWT_AUTH = {
+    "JWT_EXPIRATION_DELTA": datetime.timedelta(days=7),  # 过期时间
+    "JWT_AUTH_HEADER_PREFIX": "JWT",  # 客户端回传TOKEN时，需要增加的前缀
+}
+
+AUTH_USER_MODEL = "users.UserProfile"
+# 当需要验证一个用户的身份时，调用类的列表
+AUTHENTICATION_BACKENDS = ("users.authentification.CustomAuthBackend",)
+
 
 TEMPLATES = [
     {
@@ -121,20 +136,20 @@ ASGI_APPLICATION = "fabulous.asgi.application"
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 DATABASES = {
-    "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3",}
+    # "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3",}
     # MySQL
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': os.getenv('DB_NAME'),
-    #     'USER': os.getenv('DB_USER'),
-    #     'PASSWORD': os.getenv('DB_PASSWORD'),
-    #     'HOST': os.getenv('DB_HOST'),
-    #     'PORT': os.getenv('DB_PORT', 3306),
-    #     'OPTIONS': {
-    #         'charset': 'utf8mb4',
-    #         'init_command': 'SET sql_mode="STRICT_TRANS_TABLES", innodb_strict_mode=1',
-    #     },
-    # },
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT", 3306),
+        "OPTIONS": {
+            "charset": "utf8mb4",
+            "init_command": 'SET sql_mode="STRICT_TRANS_TABLES", innodb_strict_mode=1',
+        },
+    },
     # 'slave': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': os.getenv('SLAVE_DB_NAME'),
@@ -151,31 +166,31 @@ DATABASES = {
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # Caches  pip install django-redis = "*"
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django_redis.cache.RedisCache',
-#         'LOCATION': f'redis://{os.getenv("REDIS_HOST")}:6379/0',
-#         'TIMEOUT': 24 * 3600,
-#         'KEY_PREFIX': 'povertool',
-#         'OPTIONS': {
-#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#             'PASSWORD': os.getenv('REDIS_PASSWORD')
-#         }
-#     },
-#     # 持久化缓存
-#     'pers': {
-#         'BACKEND': 'django_redis.cache.RedisCache',
-#         'LOCATION': f'redis://{os.getenv("REDIS_HOST")}:6379/1',
-#         'TIMEOUT': 24 * 3600,
-#         'KEY_PREFIX': 'povertool_pers',
-#         'OPTIONS': {
-#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#             'PASSWORD': os.getenv('REDIS_PASSWORD')
-#         }
-#     },
-# }
-# CACHE_MIDDLEWARE_KEY_PREFIX = 'povertool'
-# CACHE_MIDDLEWARE_SECONDS = 24 * 3600
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f'redis://{os.getenv("REDIS_HOST")}:6379/0',
+        "TIMEOUT": 24 * 3600,
+        "KEY_PREFIX": "povertool",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": os.getenv("REDIS_PASSWORD"),
+        },
+    },
+    # # 持久化缓存
+    # 'pers': {
+    #     'BACKEND': 'django_redis.cache.RedisCache',
+    #     'LOCATION': f'redis://{os.getenv("REDIS_HOST")}:6379/1',
+    #     'TIMEOUT': 24 * 3600,
+    #     'KEY_PREFIX': 'povertool_pers',
+    #     'OPTIONS': {
+    #         'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+    #         'PASSWORD': os.getenv('REDIS_PASSWORD')
+    #     }
+    # },
+}
+CACHE_MIDDLEWARE_KEY_PREFIX = "povertool"
+CACHE_MIDDLEWARE_SECONDS = 24 * 3600
 
 
 # Password validation
@@ -212,10 +227,6 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-RESPONSE_ENCRYPT_KEY = "wGMVi7PWpGe8UiqaYcEgXTgFm+q10awDL7jL9394PPE="
-JWT_ENCRYPT_KEY = "wGMVi7PWpGe8UiqaYc124235m+q10awDL7jL9394PPE="
 # Celery
 CELERY_ENABLE_UTC = False
 CELERY_TIMEZONE = TIME_ZONE
